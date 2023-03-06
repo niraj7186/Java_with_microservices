@@ -1,0 +1,88 @@
+version: "3.8"
+services:
+  mysql:
+    container_name: mysqldb_user
+    image: mysql
+    networks:
+      springboot-microservice-net:
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: users
+
+  mysql_account:
+    container_name: mysqldb_account
+    image: mysql
+    networks:
+      springboot-microservice-net:
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: account
+
+  service-registry:
+    container_name: service-registry
+    depends_on:
+      - mysql_account
+    build:
+      context: ./service-registry/
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      springboot-microservice-net:
+
+  config-server:
+    container_name: congif-server
+    depends_on:
+      - service-registry
+    build:
+      context: ./config-server
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+    networks:
+      springboot-microservice-net:
+    restart: on-failure
+
+  api-gateway:
+    container_name: api-gateway
+    depends_on:
+      - config-server
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "9191:9191"
+    networks:
+      springboot-microservice-net:
+    restart: on-failure
+
+  altimetrik_user_api:
+    container_name: user-api
+    depends_on:
+      - api-gateway
+    build:
+      context: ./altimetrik_user_api
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+          springboot-microservice-net:
+    restart: on-failure
+
+  account-api:
+    container_name: account-api
+    depends_on:
+      - altimetrik_user_api
+    build:
+      context: ./account-api
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    networks:
+      springboot-microservice-net:
+    restart: on-failure
+
+
+
+networks:
+  springboot-microservice-net:
