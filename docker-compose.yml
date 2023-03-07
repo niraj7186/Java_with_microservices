@@ -39,9 +39,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8888:8888"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
     networks:
       springboot-microservice-net:
-    restart: on-failure
 
   api-gateway:
     container_name: api-gateway
@@ -52,9 +55,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - "9191:9191"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
     networks:
       springboot-microservice-net:
-    restart: on-failure
 
   altimetrik_user_api:
     container_name: user-api
@@ -65,9 +71,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
     networks:
           springboot-microservice-net:
-    restart: on-failure
 
   account-api:
     container_name: account-api
@@ -78,11 +87,12 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
     networks:
       springboot-microservice-net:
-    restart: on-failure
-
-
 
 networks:
   springboot-microservice-net:
